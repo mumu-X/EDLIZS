@@ -7,6 +7,7 @@ export default function Diseases_and_Conditions({ title, flag, subtopics, naviga
 
   // Get window dimensions
   const windowheight = useWindowDimensions().height;
+  const windowwidth = useWindowDimensions().width;
 
   // Toggle the expand/collapse state
   const handleToggleExpand = () => {
@@ -17,7 +18,7 @@ export default function Diseases_and_Conditions({ title, flag, subtopics, naviga
     <View>
       {/* Touchable main topic */}
       <TouchableOpacity
-        style={[styles.Topic, { height: windowheight / 8 }]}
+        style={[styles.Topic, { height: windowheight / 8 , width: windowwidth * 0.9, }]}
         onPress={handleToggleExpand}
       >
         <Text style={styles.TopicText}>{flag} {title}</Text>
@@ -47,7 +48,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F6FB7A',
     justifyContent: 'center',
     alignItems: 'flex-start',
-    width: '97%',
+    //width: '97%',
     marginVertical: 2,
     padding: 10,
     shadowColor: '#000',

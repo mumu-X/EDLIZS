@@ -47,8 +47,7 @@ const windowwidth = useWindowDimensions().width;
       </Text>
       </View>
      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => console.warn('MedicinesScreen Pressed')
-         //handleNavigate('MedicinesScreen')
+        <TouchableOpacity style={styles.button} onPress={() => (console.warn('MedicinesScreenPressed'), navigation.navigate('Medicine'))
           }>
           <Text style={styles.buttonText}>Medicines</Text>
         </TouchableOpacity>
@@ -62,10 +61,10 @@ const windowwidth = useWindowDimensions().width;
            }>
           <Text style={styles.buttonText}>Tools and Resources</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => (console.warn('SmartSearchScreen'), navigation.navigate('Index') )
+        <TouchableOpacity style={styles.button} onPress={() => (console.warn('SmartSearchScreen'), navigation.navigate('Events') )
           //handleNavigate('SmartSearchScreen')
           }>
-          <Text style={styles.buttonText}>Smart Search</Text>
+          <Text style={styles.buttonText}>CPD Events</Text>
         </TouchableOpacity>
       </View>
      </View>

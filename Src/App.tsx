@@ -6,6 +6,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import UploadDataPage from './Screens/Adddata';
 import ContentPage from './Screens/ContentPage';
+import Eventpg from './Screens/Eventpg';
+import Medicines from './Screens/Medicines';
 
 const Stack = createNativeStackNavigator();
 
@@ -17,7 +19,7 @@ function App() {
         <Stack.Screen name="Home" component={HomeScreen} options={{
           title: 'EDLIZ',
           headerStyle: {
-            backgroundColor: 'green',
+            backgroundColor: '#73BBA3',
           },
           headerTintColor: '#fff',
           headerTitleStyle: {
@@ -26,9 +28,12 @@ function App() {
          
         }} />
          <Stack.Screen name="Index" component={Diseases_and_Conditions}
-         options={{headerStyle:{backgroundColor:'green'}}}/>
+         options={{headerStyle:{backgroundColor:'#73BBA3'}}}/>
          <Stack.Screen name="UploadData" component={UploadDataPage}/>
          <Stack.Screen name="Content" component={ContentPage}/>
+         <Stack.Screen name="Events" component={Eventpg}/>
+         <Stack.Screen name="Medicine" component={Medicines}
+          options={{headerStyle:{backgroundColor:'#73BBA3'}}}/>
       </Stack.Navigator>
       }
       
