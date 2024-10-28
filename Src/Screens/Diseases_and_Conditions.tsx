@@ -54,6 +54,7 @@ export default function Diseases_and_Conditions({ navigation }: any) {
             navigateToContent={navigatetocontent}  // Navigation function
           />
         )}
+      showsVerticalScrollIndicator={false} // Remove vertical scroll indicator
       />
     </View>
   );

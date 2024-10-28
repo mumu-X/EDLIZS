@@ -5,4 +5,6 @@ export default {
     noBGicon : require('../Components/Asserts/images/icon-absolute.png'),
     HeartIconNotActive : require('../Components/Asserts/Icons/heart.png'),
     HeartIconActive: require('../Components/Asserts/Icons/heartinactive.png'),
+    DBoff: require ('../Components/Asserts/Icons/SQLinactive.png'),
+    DBon: require ('../Components/Asserts/Icons/SQLactive.png'),
 }
