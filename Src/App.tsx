@@ -8,6 +8,9 @@ import UploadDataPage from './Screens/Adddata';
 import ContentPage from './Screens/ContentPage';
 import Eventpg from './Screens/Eventpg';
 import Medicines from './Screens/Medicines';
+import { RealmProvider } from '@realm/react';
+import { Task } from './models/Task';
+
 
 const Stack = createNativeStackNavigator();
 
@@ -19,6 +22,7 @@ function App() {
   return (
     <NavigationContainer >
       {
+        <RealmProvider schema={[Task]}>
         <Stack.Navigator initialRouteName="Home" >
         <Stack.Screen name="Home" component={HomeScreen} options={{
           title: 'EDLIZ',
@@ -47,9 +51,11 @@ function App() {
          <Stack.Screen name="Medicine" component={Medicines}
           options={{headerStyle:{backgroundColor:'#73BBA3'}}}/>
       </Stack.Navigator>
+      </RealmProvider>
       }
       
     </NavigationContainer>
+    
   );
 }
 
