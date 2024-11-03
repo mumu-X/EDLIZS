@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, useWindowDimensions, FlatList } from 'react-native';
 
-export default function Diseases_and_Conditions({ title, flag, subtopics, navigateToContent}: any) {
+export default function Diseases_and_Conditions({ title, flag, subtopics, navigateToContent, collection}: any) {
   // Track whether the topic is expanded or not
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -32,7 +32,7 @@ export default function Diseases_and_Conditions({ title, flag, subtopics, naviga
           renderItem={({ item }) => (
             <TouchableOpacity
             style={styles.SubTopic}
-            onPress={() => navigateToContent(item)}>
+            onPress={() => navigateToContent(title, item, collection)}>
               <Text style={styles.SubTopicText}>• {item}</Text>
             </TouchableOpacity>
           )}

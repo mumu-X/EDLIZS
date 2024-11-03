@@ -1,42 +1,99 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, Image, Alert } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
-
+import { useRealm } from '@realm/react';
+import { MedicalGuidelineTopics } from '../models/Task';
 
 type ContentBlock = {
-  type: 'paragraph' | 'list' | 'image' | 'bullet' | 'numberbullet' | 'Titleheading'| 'table' |'sectionheading'| 'text';
+  type: 'paragraph' | 'text' | 'image' | 'bullet' | 'numberbullet' | 'Titleheading' | 'table' | 'sectionheading';
   text?: string;
   items?: string[];
   url?: string;
   caption?: string;
 };
 
-type Section = {
-  header: string;
-  content: ContentBlock[];
+type TableRow = {
+  [key: string]: string;
 };
 
-type DataType = {
+interface Section {
+  header: string;
+  content: ContentBlock[];
+}
+
+interface DataType {
   title: string;
   subtitle?: string;
   sections: Section[];
-};
+  label?: string;
+  subtopic?: string;
+}
+
+interface Heading {
+  contentSubtitle: string;
+  contentTitle: string;
+  
+}
+
+interface SArray {
+  subtopic: string;
+  sections: Section[];
+}
+
+interface IDisease {
+  label: string;
+  SArray: SArray[];
+}
+
+interface Location {
+  collection: string;
+}
 
 const ContentPage = ({ route, navigation }: any) => {
+  const realm = useRealm();
   const [data, setData] = useState<DataType | null>(null);
+  const [hasData, setHasData] = useState(false);
 
-  const contentTitle=route.params.subtopics
+  //console.log('route.params:', route.params);
 
-  // Function to load data from Firestore
+  // Corrected assignments
+  const contentTitle = route.params.title;
+  const contentSubtitle = route.params.subtopics;
+  const collectionName = route.params.collection;
+
+
+  useEffect(() => {
+    const topics = realm.objects<MedicalGuidelineTopics>('MedicalGuidelineTopic');
+    setHasData(topics.length > 0);
+
+    const listener = () => {
+      setHasData(topics.length > 0);
+    };
+    topics.addListener(listener);
+
+    return () => {
+      topics.removeListener(listener);
+    };
+  }, [realm]);
+
+  useEffect(() => {
+    if (hasData) {
+      getDiseasefromRealm({ contentTitle, contentSubtitle });
+    } else {
+      loadDataFromFirestore();
+    }
+  }, [hasData]);
+
   const loadDataFromFirestore = async () => {
     try {
       const snapshot = await firestore()
-        .collection('DIseases_Conditions') // Replace with your collection name
-        .where("title", "==", `${contentTitle}`) // condition we are looking for
+        .collection(collectionName)
+        .where('title', '==', contentTitle)
+        .where ('subtitle', '==', contentSubtitle)
         .get();
 
       if (!snapshot.empty) {
-        const fetchedData = snapshot.docs[0].data() as DataType; // Assuming the first doc matches
+        const fetchedData = snapshot.docs[0].data() as DataType;
         setData(fetchedData);
         Alert.alert('Success', 'Data loaded successfully!');
       } else {
@@ -44,14 +101,39 @@ const ContentPage = ({ route, navigation }: any) => {
       }
     } catch (error) {
       Alert.alert('Error', 'Failed to load data.');
-      console.error('Error loading document: ', error);
     }
   };
 
-  // Load data on component mount
-  useEffect(() => {
-    loadDataFromFirestore();
-  }, []);
+  const getDiseasefromRealm = async ({ contentTitle, contentSubtitle }: Heading) => {
+    try {
+      // Removed backslash before \$0
+      const diseasesInRealm = realm.objects<IDisease>('Disease').filtered('label == \$0', contentSubtitle);
+      console.log('Diseases in Realm:', diseasesInRealm);
+
+      if (diseasesInRealm.length === 0) {
+        console.warn('No matching label found for:', contentSubtitle);
+        return;
+      }
+
+      const disease = diseasesInRealm[0];
+      console.log('Selected Disease:', disease);
+
+      const data = disease.SArray.find((sArray: SArray) => sArray.subtopic === contentTitle);
+
+      if (!data) {
+        console.warn('No matching subtopic found for:', contentTitle);
+        return;
+      }
+
+      setData({
+        title: disease.label,
+        subtitle: data.subtopic,
+        sections: data.sections,
+      });
+    } catch (error) {
+      console.error('Error fetching subtopic data from Realm:', error);
+    }
+  };
 
   if (!data) {
     return (
@@ -66,66 +148,101 @@ const ContentPage = ({ route, navigation }: any) => {
       <Text style={styles.title}>{data.title}</Text>
       {data.subtitle && <Text style={styles.subtitle}>{data.subtitle}</Text>}
 
-
-
-
-      
-      {data.sections.map((section, index) => (
-        <View key={index} style={styles.section}>
-          <Text style={styles.header}>{section.header}</Text>
-
-
-
-          {section.content.map((block, idx) => {
-  if (block.type === 'paragraph') {
-    return <Text key={idx} style={styles.paragraph}>{block.text}</Text>;
-  } else if (block.type === 'text') {
-    return block.items?.map((item, i) => (
-      <Text key={i} style={styles.bulletItem}>• {item}</Text>
-    ));
-  } else if (block.type === 'numberbullet') {
-    return block.items?.map((item, i) => (
-      <Text key={i} style={styles.numberBulletItem}>{`${i + 1}. ${item}`}</Text>
-    ));
-  } else if (block.type === 'Titleheading') {
-    return <Text key={idx} style={styles.titleHeading}>{block.text}</Text>;
-  } else if (block.type === 'sectionheading') {
-    return <Text key={idx} style={styles.sectionHeading}>{block.text}</Text>;
-  }else if (block.type === 'bullet') {
-    return <Text key={idx} style={styles.sectionHeading}>{block.text}</Text>;
-
-  } else if (block.type === 'table') {
-    return (
-      <View key={idx} style={styles.tableContainer}>
-        {block.text.map((row, rowIndex) => (
-          <View key={rowIndex} style={styles.tableRow}>
-            {Object.values(row).map((cell, cellIndex) => (
-              <Text key={cellIndex} style={styles.tableCell}>
-                {cell || '-'} {/* Display a dash for empty cells */}
-              </Text>
-            ))}
+      {data.sections.map((section, index) => {
+        console.log('Section:', section);
+        return (
+          <View key={index} style={styles.section}>
+            {section.content.map((block, idx) => {
+              console.log('Block:', block);
+              switch (block.type) {
+                case 'paragraph':
+                  return (
+                    <Text key={idx} style={styles.paragraph}>
+                      {block.text}
+                    </Text>
+                  );
+                case 'text':
+                  if (block.items) {
+                    return block.items.map((item, i) => (
+                      <Text key={i} style={styles.bulletItem}>
+                        • {item}
+                      </Text>
+                    ));
+                  } else if (block.text) {
+                    return (
+                      <Text key={idx} style={styles.paragraph}>
+                        {block.text}
+                      </Text>
+                    );
+                  } else {
+                    return null;
+                  }
+                case 'numberbullet':
+                  return block.items?.map((item, i) => (
+                    <Text key={i} style={styles.numberBulletItem}>
+                      {`${i + 1}. ${item}`}
+                    </Text>
+                  ));
+                case 'Titleheading':
+                  return (
+                    <Text key={idx} style={styles.titleHeading}>
+                      {block.text}
+                    </Text>
+                  );
+                case 'sectionheading':
+                  return (
+                    <Text key={idx} style={styles.sectionHeading}>
+                      {block.text}
+                    </Text>
+                  );
+                case 'bullet':
+                  return (
+                    <Text key={idx} style={styles.bulletItem}>
+                      • {block.text}
+                    </Text>
+                  );
+                case 'table':
+                  if (Array.isArray(block.text)) {
+                    return (
+                      <View key={idx} style={styles.tableContainer}>
+                        {(block.text as TableRow[]).map((row, rowIndex) => (
+                          <View key={rowIndex} style={styles.tableRow}>
+                            {Object.values(row).map((cell, cellIndex) => (
+                              <Text key={cellIndex} style={styles.tableCell}>
+                                {cell || '-'}
+                              </Text>
+                            ))}
+                          </View>
+                        ))}
+                      </View>
+                    );
+                  } else {
+                    return null;
+                  }
+                case 'image':
+                  if (block.url) {
+                    return (
+                      <View key={idx} style={styles.imageContainer}>
+                        <Image source={{ uri: block.url }} style={styles.image} resizeMode="contain" />
+                        {block.caption && <Text style={styles.caption}>{block.caption}</Text>}
+                      </View>
+                    );
+                  } else {
+                    return null;
+                  }
+                default:
+                  console.warn('Unknown block type:', block.type);
+                  return null;
+              }
+            })}
           </View>
-        ))}
-      </View>
-    );
-  }else if (block.type === 'image' && block.url){
-    return (
-      <View key={idx} style={styles.imageContainer}>
-        <Image 
-          source={{ uri: block.url }} 
-          style={styles.image} 
-          resizeMode="contain" 
-        />
-        {block.caption && <Text style={styles.caption}>{block.caption}</Text>}
-      </View>
-              );
-            }
-          })}
-        </View>
-      ))}
+        );
+      })}
     </ScrollView>
   );
 };
+
+
 
 const styles = StyleSheet.create({
   container: {
@@ -203,7 +320,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,  // Space below section heading
     textAlign: 'left',
   },
- 
+
   tableContainer: {
     marginTop: 10,
     backgroundColor: '#f3f3f3',
@@ -221,7 +338,7 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     backgroundColor: '#f4f4f4',
   },
-  
+
 });
 
 

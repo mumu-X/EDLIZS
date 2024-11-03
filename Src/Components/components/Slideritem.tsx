@@ -57,17 +57,16 @@ const SliderItem = ({ item, index, scrollX } : Props) => {
             <Image
                 source={{ uri: item.image }}
                 style={styles.image}
-            />
-            <View style={styles.bg}>
-                <View>
-                  <TouchableOpacity onPress={toggleHeart}>
-                        <Image source={isHeartActive ? ImagePath.HeartIconActive : ImagePath.HeartIconNotActive}
-                    style={styles.heartIcon}/>
-                    </TouchableOpacity>
+            /><View style={styles.bg}>
+            <View>
+              <TouchableOpacity onPress={toggleHeart}>
+                    <Image source={isHeartActive ? ImagePath.HeartIconActive : ImagePath.HeartIconNotActive}
+                style={styles.heartIcon}/>
+                </TouchableOpacity>
 
-                
-                </View>
+            
             </View>
+        </View>
         </Animated.View>
     );
 };

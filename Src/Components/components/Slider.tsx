@@ -1,4 +1,4 @@
-import { FlatList, StyleSheet, View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import React from 'react'
 import { ImageSliderType } from '../../Constants/sliderImages'
 import Slideritem from './Slideritem'
@@ -19,7 +19,6 @@ export default function Slider({itemList}:Props) {
   return (
     <View>
       <Animated.FlatList
-      
       data={itemList} 
       renderItem={({ item , index }) => 
       (<Slideritem item={item} index={index} scrollX={scrollX} /> 
