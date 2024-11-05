@@ -62,7 +62,7 @@ export default function HeaderButton() {
       const docSnapshot2 = await docRef2.get();
 
       if (docSnapshot2.exists) {
-        const data = docSnapshot.data();
+        const data = docSnapshot2.data();
         console.log('Drugs list data:', data);
 
         realm.write(() => {

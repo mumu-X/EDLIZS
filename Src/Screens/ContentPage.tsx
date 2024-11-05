@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, Image, Alert } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import { useRealm } from '@realm/react';
-import { MedicalGuidelineTopics } from '../models/Task';
+import { Disease, MedicalGuidelineTopics} from '../models/Task';
 
 type ContentBlock = {
-  type: 'paragraph' | 'text' | 'image' | 'bullet' | 'numberbullet' | 'Titleheading' | 'table' | 'sectionheading';
+  type: string;
   text?: string;
   items?: string[];
   url?: string;
@@ -35,26 +35,11 @@ interface Heading {
   
 }
 
-interface SArray {
-  subtopic: string;
-  sections: Section[];
-}
-
-interface IDisease {
-  label: string;
-  SArray: SArray[];
-}
-
-interface Location {
-  collection: string;
-}
-
 const ContentPage = ({ route, navigation }: any) => {
   const realm = useRealm();
   const [data, setData] = useState<DataType | null>(null);
-  const [hasData, setHasData] = useState(false);
-
-  //console.log('route.params:', route.params);
+  const [hasData, setHasData] = useState<boolean | null>(null);
+  
 
   // Corrected assignments
   const contentTitle = route.params.title;
@@ -63,26 +48,32 @@ const ContentPage = ({ route, navigation }: any) => {
 
 
   useEffect(() => {
-    const topics = realm.objects<MedicalGuidelineTopics>('MedicalGuidelineTopic');
+  const topics = realm.objects<MedicalGuidelineTopics>('MedicalGuidelineTopic');
+  setHasData(topics.length > 0);
+
+  const listener = () => {
     setHasData(topics.length > 0);
+  };
+  topics.addListener(listener);
 
-    const listener = () => {
-      setHasData(topics.length > 0);
-    };
-    topics.addListener(listener);
+  return () => {
+    topics.removeListener(listener);
+  };
+}, [realm]);
 
-    return () => {
-      topics.removeListener(listener);
-    };
-  }, [realm]);
-
+  // Load data based on hasData and if data is already set
   useEffect(() => {
+    if (hasData === null || data !== null) {
+      // We don't have the hasData value yet or data is already loaded, so do nothing
+      return;
+    }
+  
     if (hasData) {
       getDiseasefromRealm({ contentTitle, contentSubtitle });
     } else {
       loadDataFromFirestore();
     }
-  }, [hasData]);
+  }, [hasData, data]);
 
   const loadDataFromFirestore = async () => {
     try {
@@ -98,6 +89,8 @@ const ContentPage = ({ route, navigation }: any) => {
         Alert.alert('Success', 'Data loaded successfully!');
       } else {
         Alert.alert('No Data', 'No matching documents found.');
+        console.log('not suppose to run when data in realm')
+        console.log(hasData)
       }
     } catch (error) {
       Alert.alert('Error', 'Failed to load data.');
@@ -107,18 +100,18 @@ const ContentPage = ({ route, navigation }: any) => {
   const getDiseasefromRealm = async ({ contentTitle, contentSubtitle }: Heading) => {
     try {
       // Removed backslash before \$0
-      const diseasesInRealm = realm.objects<IDisease>('Disease').filtered('label == \$0', contentSubtitle);
-      console.log('Diseases in Realm:', diseasesInRealm);
+      const ItemInRealm = realm.objects<Disease>('Disease').filtered('label == \$0', contentSubtitle);
+      console.log('Diseases in Realm:', ItemInRealm);
 
-      if (diseasesInRealm.length === 0) {
+      if (ItemInRealm.length === 0) {
         console.warn('No matching label found for:', contentSubtitle);
         return;
       }
 
-      const disease = diseasesInRealm[0];
-      console.log('Selected Disease:', disease);
+      const labelitem = ItemInRealm[0];
+      console.log('Selected Disease:', labelitem);
 
-      const data = disease.SArray.find((sArray: SArray) => sArray.subtopic === contentTitle);
+      const data = labelitem.SArray.find((sArray) => sArray.subtopic === contentTitle);
 
       if (!data) {
         console.warn('No matching subtopic found for:', contentTitle);
@@ -126,7 +119,7 @@ const ContentPage = ({ route, navigation }: any) => {
       }
 
       setData({
-        title: disease.label,
+        title: labelitem.label,
         subtitle: data.subtopic,
         sections: data.sections,
       });

@@ -1,7 +1,6 @@
-
 import Realm, { ObjectSchema } from 'realm';
 
-// Define MedicalGuidelineTopic model with subtopics and other properties
+// Define MedicalGuidelineTopic model
 export class MedicalGuidelineTopics extends Realm.Object<MedicalGuidelineTopics> {
   label!: string;
   subtopics!: string[];
@@ -10,12 +9,12 @@ export class MedicalGuidelineTopics extends Realm.Object<MedicalGuidelineTopics>
     name: 'MedicalGuidelineTopic',
     properties: {
       label: 'string',
-      subtopics: 'string[]', // Array of strings
+      subtopics: 'string[]',
     },
   };
 }
 
-// Define MedicalGuidelineTopic model with subtopics and other properties
+// Define Drugslist model
 export class Drugslist extends Realm.Object<Drugslist> {
   label!: string;
   subtopics!: string[];
@@ -24,19 +23,19 @@ export class Drugslist extends Realm.Object<Drugslist> {
     name: 'Drugslist',
     properties: {
       label: 'string',
-      subtopics: 'string[]', // Array of strings
+      subtopics: 'string[]',
     },
   };
 }
 
 // Define embedded Content object
-class Content extends Realm.Object<Content> {
+export class Content extends Realm.Object<Content> {
   type!: string;
   text!: string;
 
   static schema: ObjectSchema = {
     name: 'Content',
-    embedded: true, // Mark as embedded
+    embedded: true,
     properties: {
       type: 'string',
       text: 'string',
@@ -45,13 +44,13 @@ class Content extends Realm.Object<Content> {
 }
 
 // Define embedded Section object
-class Section extends Realm.Object<Section> {
+export class Section extends Realm.Object<Section> {
   header!: string;
   content!: Content[];
 
   static schema: ObjectSchema = {
     name: 'Section',
-    embedded: true, // Mark as embedded
+    embedded: true,
     properties: {
       header: 'string',
       content: { type: 'list', objectType: 'Content' },
@@ -60,13 +59,13 @@ class Section extends Realm.Object<Section> {
 }
 
 // Define embedded SArray object
-class SArray extends Realm.Object<SArray> {
+export class SArray extends Realm.Object<SArray> {
   subtopic!: string;
   sections!: Section[];
 
   static schema: ObjectSchema = {
     name: 'SArray',
-    embedded: true, // Mark as embedded
+    embedded: true,
     properties: {
       subtopic: 'string',
       sections: { type: 'list', objectType: 'Section' },
@@ -88,15 +87,12 @@ export class Disease extends Realm.Object<Disease> {
   };
 }
 
-
-// Export all schemas, including embedded ones
+// Export all schemas
 export const schemas = [
-  MedicalGuidelineTopics.schema,
-  Disease.schema,
-  Content.schema,
-  Section.schema,
-  SArray.schema,
-  Drugslist.schema,
+  MedicalGuidelineTopics,
+  Drugslist,
+  Content,
+  Section,
+  SArray,
+  Disease,
 ];
-
-

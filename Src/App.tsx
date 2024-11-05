@@ -10,6 +10,7 @@ import Medicines from './Screens/Medicines';
 import { RealmProvider } from '@realm/react';
 import { schemas, } from './models/Task';
 import HeaderButton from './Components/components/HeaderButton';
+import SearchPage from './Screens/Searchpage';
 
 
 const Stack = createNativeStackNavigator();
@@ -45,6 +46,8 @@ function App() {
             <Stack.Screen name="Events" component={Eventpg}
               options={{ headerStyle: { backgroundColor: '#73BBA3' },  title: '', headerTintColor: '#000000',headerTitleStyle: {fontWeight: 'bold',}, }} />
             <Stack.Screen name="Medicine" component={Medicines}
+              options={{ headerStyle: { backgroundColor: '#73BBA3' },  title: '', headerTintColor: '#000000',headerTitleStyle: {fontWeight: 'bold',}, }} />
+             <Stack.Screen name="Search" component={SearchPage}
               options={{ headerStyle: { backgroundColor: '#73BBA3' },  title: '', headerTintColor: '#000000',headerTitleStyle: {fontWeight: 'bold',}, }} />
           </Stack.Navigator>
         </RealmProvider>

@@ -82,3 +82,4 @@ android/app/google-services.json
 firebase.json
 android/app/google-services.json
 ios/GoogleService-Info.plist
+ios/EDLIZ/Info.plist

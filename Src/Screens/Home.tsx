@@ -33,19 +33,19 @@ const HomeScreen = ({ navigation }: any) => {
               </Text>
             </View>
             <View style={styles.buttonContainer}>
-              <TouchableOpacity style={styles.button} onPress={() => (console.warn('MedicinesScreenPressed'), navigation.navigate('Medicine'))}>
-                <Text style={styles.buttonText}>Medicines</Text>
+              <TouchableOpacity style={styles.button} onPress={() => (navigation.navigate('Medicine'))}>
+                <Text style={styles.buttonText}>Drugs</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.button} onPress={() => (console.warn('DiseasesConditionsScreen'), navigation.navigate('Index'))}>
-                <Text style={styles.buttonText}>Diseases and Conditions</Text>
+              <TouchableOpacity style={styles.button} onPress={() => (navigation.navigate('Index'))}>
+                <Text style={styles.buttonText}>Conditions</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.button} onPress={() => console.warn('ToolsResourcesScreen')}>
-                <Text style={styles.buttonText}>Tools and Resources</Text>
+              <TouchableOpacity style={styles.button} onPress={() => ( navigation.navigate('Search'))} >
+                <Text style={styles.buttonText}>Search</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.button} onPress={() => (console.warn('SmartSearchScreen'), navigation.navigate('Events'))}>
+              <TouchableOpacity style={styles.button} onPress={() => ( navigation.navigate('Events'))}>
                 <Text style={styles.buttonText}>CPD Events</Text>
               </TouchableOpacity>
             </View>

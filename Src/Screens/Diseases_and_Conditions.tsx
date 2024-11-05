@@ -34,7 +34,6 @@ export default function Diseases_and_Conditions({ navigation }: any) {
 
           if (docSnapshot.exists) {
             const data = docSnapshot.data();
-            console.log('Document data:', data);
             const topics = data?.topics || [];
 
            /* // Save to Realm

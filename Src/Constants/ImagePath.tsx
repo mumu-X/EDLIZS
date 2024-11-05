@@ -7,4 +7,5 @@ export default {
     HeartIconActive: require('../Components/Asserts/Icons/heartinactive.png'),
     DBoff: require ('../Components/Asserts/Icons/SQLinactive.png'),
     DBon: require ('../Components/Asserts/Icons/SQLactive.png'),
+    search: require ('../Components/Asserts/Icons/search.png')
 }
